@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghost in the Machine — Trading Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0c0c0e;
+    --surface: #111114;
+    --surface2: #16161a;
+    --border: rgba(255,255,255,0.07);
+    --border-strong: rgba(255,255,255,0.12);
+    --text: #e8e4dc;
+    --muted: #6b6860;
+    --subtle: #3a3835;
+    --gold: #c9a84c;
+    --gold-dim: rgba(201,168,76,0.12);
+    --blue: #4a8fd4;
+    --blue-dim: rgba(74,143,212,0.1);
+    --red: #c0544a;
+    --red-dim: rgba(192,84,74,0.1);
+    --green: #5a9e6f;
+    --green-dim: rgba(90,158,111,0.1);
+    --font-serif: 'EB Garamond', Georgia, serif;
+    --font-mono: 'DM Mono', monospace;
+    --font-sans: 'Instrument Sans', sans-serif;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-sans); font-size:14px; line-height:1.5; min-height:100vh; }
+  nav { display:flex; align-items:center; justify-content:space-between; padding:0 40px; height:58px; border-bottom:1px solid var(--border); background:var(--surface); }
+  .nav-brand { font-family:var(--font-serif); font-size:17px; font-weight:500; letter-spacing:0.02em; }
+  .nav-left { display:flex; align-items:baseline; gap:18px; }
+  .nav-divider { width:1px; height:13px; background:var(--border-strong); align-self:center; }
+  .nav-sub { font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; }
+  .nav-right { display:flex; align-items:center; gap:24px; }
+  .status-pill { display:flex; align-items:center; gap:7px; font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.05em; text-transform:uppercase; }
+  .dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:breathe 3s ease-in-out infinite; }
+  @keyframes breathe { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  .clock { font-family:var(--font-mono); font-size:12px; color:var(--muted); letter-spacing:0.04em; }
+  main { padding:32px 40px 60px; display:flex; flex-direction:column; gap:28px; }
+  .section-label { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:14px; }
+  .stat-row { display:grid; grid-template-columns:repeat(6,1fr); gap:1px; background:var(--border); border:1px solid var(--border); }
+  .stat-cell { background:var(--surface); padding:22px 24px; }
+  .stat-cell:hover { background:var(--surface2); }
+  .stat-name { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:10px; }
+  .stat-num { font-family:var(--font-serif); font-size:28px; font-weight:500; color:var(--text); line-height:1; }
+  .stat-num.gold { color:var(--gold); }
+  .stat-num.blue { color:var(--blue); }
+  .stat-num.dim { color:var(--muted); }
+  .stat-meta { font-family:var(--font-mono); font-size:11px; color:var(--subtle); margin-top:8px; }
+  .content-grid { display:grid; grid-template-columns:1fr 300px; gap:1px; background:var(--border); }
+  .panel { background:var(--surface); }
+  .panel-head { display:flex; align-items:center; justify-content:space-between; padding:15px 24px; border-bottom:1px solid var(--border); }
+  .panel-name { font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; }
+  .panel-meta { font-family:var(--font-mono); font-size:10px; color:var(--subtle); }
+  table { width:100%; border-collapse:collapse; }
+  th { font-family:var(--font-mono); font-size:10px; color:var(--muted); letter-spacing:0.1em; text-transform:uppercase; padding:12px 24px; text-align:left; font-weight:400; border-bottom:1px solid var(--border); }
+  td { padding:13px 24px; font-family:var(--font-mono); font-size:12px; border-bottom:1px solid var(--border); vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:var(--surface2); }
+  .empty { padding:52px 24px; text-align:center; }
+  .empty-label { font-family:var(--font-serif); font-size:15px; color:var(--muted); font-style:italic; margin-bottom:8px; }
+  .empty-sub { font-family:var(--font-mono); font-size:10px; color:var(--subtle); letter-spacing:0.08em; text-transform:uppercase; }
+  .pill { display:inline-block; padding:2px 9px; font-family:var(--font-mono); font-size:10px; letter-spacing:0.05em; text-transform:uppercase; }
+  .pill-long { background:var(--green-dim); color:var(--green); }
+  .pill-short { background:var(--red-dim); color:var(--red); }
+  .pill-open { background:var(--blue-dim); color:var(--blue); }
+  .pill-win { background:var(--green-dim); color:var(--green); }
+  .pill-loss { background:var(--red-dim); color:var(--red); }
+  .sidebar { background:var(--surface); display:flex; flex-direction:column; border-left:1px solid var(--border); }
+  .feed { overflow-y:auto; max-height:360px; }
+  .feed::-webkit-scrollbar { width:3px; }
+  .feed::-webkit-scrollbar-thumb { background:var(--subtle); }
+  .feed-item { padding:13px 18px; border-bottom:1px solid var(--border); }
+  .feed-time { font-family:var(--font-mono); font-size:10px; color:var(--subtle); margin-bottom:4px; }
+  .feed-text { font-family:var(--font-mono); font-size:12px; color:var(--muted); line-height:1.5; }
+  .feed-text.signal { color:var(--gold); }
+  .feed-text.info { color:var(--blue); }
+  .meta-block { padding:18px; border-top:1px solid var(--border); display:flex; flex-direction:column; gap:0; }
+  .meta-row { display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border); }
+  .meta-row:last-child { border-bottom:none; }
+  .meta-key { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .meta-val { font-family:var(--font-serif); font-size:15px; color:var(--text); }
+  .bottom-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--border); }
+  .wr-wrap { padding:22px 24px; }
+  .wr-top { display:flex; justify-content:space-between; margin-bottom:10px; }
+  .wr-label { font-family:var(--font-mono); font-size:11px; color:var(--muted); letter-spacing:0.05em; }
+  .wr-pct { font-family:var(--font-serif); font-size:16px; color:var(--gold); }
+  .wr-track { height:2px; background:var(--subtle); margin-bottom:22px; }
+  .wr-fill { height:100%; background:var(--gold); transition:width 1.2s ease; }
+  .wr-boxes { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .wr-box { padding:14px; border:1px solid var(--border); text-align:center; }
+  .wr-box-label { font-family:var(--font-mono); font-size:10px; color:var(--subtle); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:8px; }
+  .wr-box-num { font-family:var(--font-serif); font-size:22px; }
+  .pair-section { padding:20px 24px; display:flex; flex-direction:column; gap:16px; }
+  .pair-item { display:flex; align-items:center; gap:14px; }
+  .pair-sym { font-family:var(--font-mono); font-size:11px; color:var(--muted); width:68px; letter-spacing:0.04em; }
+  .pair-track { flex:1; height:2px; background:var(--subtle); }
+  .pair-fill { height:100%; background:var(--gold); opacity:0.55; transition:width 1s ease; }
+  .pair-num { font-family:var(--font-mono); font-size:11px; color:var(--subtle); width:18px; text-align:right; }
+  footer { padding:18px 40px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .footer-left { font-family:var(--font-serif); font-size:13px; color:var(--subtle); font-style:italic; }
+  .footer-right { font-family:var(--font-mono); font-size:10px; color:var(--subtle); letter-spacing:0.08em; text-transform:uppercase; }
+  @media(max-width:1100px) {
+    .stat-row { grid-template-columns:repeat(3,1fr); }
+    .content-grid { grid-template-columns:1fr; }
+    .bottom-grid { grid-template-columns:1fr; }
+    nav,main,footer { padding-left:20px; padding-right:20px; }
+  }
+  @media(max-width:600px) { .stat-row { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <span class="nav-brand">Ghost in the Machine</span>
+    <div class="nav-divider"></div>
+    <span class="nav-sub">Algorithmic Trading System</span>
+  </div>
+  <div class="nav-right">
+    <div class="status-pill"><div class="dot"></div><span id="botStatus">Live — Scanning</span></div>
+    <div class="clock" id="clock">—</div>
+  </div>
+</nav>
+
+<main>
+
+  <div>
+    <div class="section-label">Account Overview</div>
+    <div class="stat-row">
+      <div class="stat-cell">
+        <div class="stat-name">Balance</div>
+        <div class="stat-num" id="balance">$200,000</div>
+        <div class="stat-meta">OANDA Demo</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-name">Total Scans</div>
+        <div class="stat-num blue" id="totalScans">—</div>
+        <div class="stat-meta">Since launch</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-name">Signals</div>
+        <div class="stat-num" id="totalSignals">—</div>
+        <div class="stat-meta">Confirmed setups</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-name">Trades</div>
+        <div class="stat-num" id="totalTrades">—</div>
+        <div class="stat-meta">Executed orders</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-name">Win Rate</div>
+        <div class="stat-num gold" id="winRate">—</div>
+        <div class="stat-meta" id="wlRecord">W — / L —</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-name">Open Trades</div>
+        <div class="stat-num dim" id="openTrades">—</div>
+        <div class="stat-meta">Currently active</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Signal Monitor</div>
+    <div class="content-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-name">Recent Signals</div>
+          <div class="panel-meta" id="signalCount">0 total</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Time (UTC)</th><th>Instrument</th><th>Direction</th><th>Sweep</th><th>Stop Loss</th><th>Take Profit</th><th>Zones</th></tr></thead>
+            <tbody id="signalsBody">
+              <tr><td colspan="7"><div class="empty"><div class="empty-label">Awaiting first signal</div><div class="empty-sub">Bot is scanning — conditions not yet met</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="sidebar">
+        <div class="panel-head">
+          <div class="panel-name">Activity Feed</div>
+          <div class="panel-meta">Live</div>
+        </div>
+        <div class="feed" id="liveFeed">
+          <div class="feed-item"><div class="feed-time" id="launchTime">—</div><div class="feed-text info">System online — scanning active</div></div>
+          <div class="feed-item"><div class="feed-time">—</div><div class="feed-text">Instruments: EURUSD · GBPUSD · AUDUSD · XAUUSD</div></div>
+          <div class="feed-item"><div class="feed-time">—</div><div class="feed-text">Market hours: Sun 21:00 – Fri 19:00 UTC</div></div>
+          <div class="feed-item"><div class="feed-time">—</div><div class="feed-text">Risk: 1% Forex · 0.5% Gold · Min 2:1 RR</div></div>
+        </div>
+        <div class="meta-block">
+          <div class="meta-row"><div class="meta-key">Account</div><div class="meta-val">OANDA Demo-1</div></div>
+          <div class="meta-row"><div class="meta-key">Strategy</div><div class="meta-val">ICT / SMC</div></div>
+          <div class="meta-row"><div class="meta-key">Scan interval</div><div class="meta-val">5 minutes</div></div>
+          <div class="meta-row"><div class="meta-key">Timeframe</div><div class="meta-val">H1 / M5 / M1</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="section-label">Trade Log & Performance</div>
+    <div class="bottom-grid">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-name">Trade Log</div>
+          <div class="panel-meta" id="tradeCount">0 total</div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Time</th><th>Instrument</th><th>Side</th><th>Entry</th><th>SL</th><th>TP</th><th>Size</th><th>Result</th></tr></thead>
+            <tbody id="tradesBody">
+              <tr><td colspan="8"><div class="empty"><div class="empty-label">No trades recorded</div><div class="empty-sub">Awaiting execution</div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="panel" style="display:flex;flex-direction:column;">
+        <div class="panel-head"><div class="panel-name">Performance</div><div class="panel-meta">All time</div></div>
+        <div class="wr-wrap">
+          <div class="wr-top"><div class="wr-label">Win Rate</div><div class="wr-pct" id="wrPct">0%</div></div>
+          <div class="wr-track"><div class="wr-fill" id="wrBar" style="width:0%"></div></div>
+          <div class="wr-boxes">
+            <div class="wr-box"><div class="wr-box-label">Wins</div><div class="wr-box-num" id="wins" style="color:var(--green);">0</div></div>
+            <div class="wr-box"><div class="wr-box-label">Losses</div><div class="wr-box-num" id="losses" style="color:var(--red);">0</div></div>
+            <div class="wr-box"><div class="wr-box-label">Open</div><div class="wr-box-num" id="openCount" style="color:var(--blue);">0</div></div>
+          </div>
+        </div>
+        <div class="panel-head" style="border-top:1px solid var(--border);"><div class="panel-name">Instrument Activity</div><div class="panel-meta">By signals</div></div>
+        <div class="pair-section">
+          <div class="pair-item"><div class="pair-sym">EURUSD</div><div class="pair-track"><div class="pair-fill" id="eu-bar" style="width:0%"></div></div><div class="pair-num" id="eu-count">0</div></div>
+          <div class="pair-item"><div class="pair-sym">GBPUSD</div><div class="pair-track"><div class="pair-fill" id="gu-bar" style="width:0%"></div></div><div class="pair-num" id="gu-count">0</div></div>
+          <div class="pair-item"><div class="pair-sym">AUDUSD</div><div class="pair-track"><div class="pair-fill" id="au-bar" style="width:0%"></div></div><div class="pair-num" id="au-count">0</div></div>
+          <div class="pair-item"><div class="pair-sym">XAUUSD</div><div class="pair-track"><div class="pair-fill" id="xau-bar" style="width:0%"></div></div><div class="pair-num" id="xau-count">0</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-left">GhostAlgo — Algorithmic Trading System</div>
+  <div class="footer-right">Demo account &nbsp;·&nbsp; Not financial advice &nbsp;·&nbsp; Refreshes every 30s</div>
+</footer>
+
+<script>
+  function updateClock() {
+    const n = new Date();
+    const pad = x => String(x).padStart(2,'0');
+    const ny = new Date(n.toLocaleString('en-US', {timeZone:'America/New_York'}));
+    document.getElementById('clock').textContent = pad(ny.getHours())+':'+pad(ny.getMinutes())+':'+pad(ny.getSeconds())+' EST';
+    document.getElementById('launchTime').textContent = pad(n.getUTCHours())+':'+pad(n.getUTCMinutes())+' UTC';
+  }
+  updateClock(); setInterval(updateClock, 1000);
+
+  async function loadData() {
+    try {
+      const res = await fetch('data.json?t='+Date.now());
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.stats) {
+        const s = data.stats;
+        if (s.balance) document.getElementById('balance').textContent = '$'+Number(s.balance).toLocaleString();
+        ['totalScans','totalSignals','totalTrades','openTrades'].forEach(id => {
+          const key = id.replace(/([A-Z])/g, '_$1').toLowerCase();
+          document.getElementById(id).textContent = s[key] || '0';
+        });
+        document.getElementById('openCount').textContent = s.open_trades || '0';
+        document.getElementById('wins').textContent = s.wins || '0';
+        document.getElementById('losses').textContent = s.losses || '0';
+        const wr = s.total_trades > 0 ? Math.round((s.wins/s.total_trades)*100) : 0;
+        document.getElementById('winRate').textContent = wr+'%';
+        document.getElementById('wrPct').textContent = wr+'%';
+        document.getElementById('wrBar').style.width = wr+'%';
+        document.getElementById('wlRecord').textContent = 'W '+(s.wins||0)+' / L '+(s.losses||0);
+      }
+      if (data.signals && data.signals.length > 0) {
+        document.getElementById('signalCount').textContent = data.signals.length+' total';
+        const tbody = document.getElementById('signalsBody');
+        tbody.innerHTML = '';
+        data.signals.slice(-20).reverse().forEach(s => {
+          const dir = s.direction==='BULLISH' ? '<span class="pill pill-long">Long</span>' : '<span class="pill pill-short">Short</span>';
+          tbody.innerHTML += `<tr><td>${s.timestamp?s.timestamp.slice(11,16):'—'}</td><td>${s.symbol||'—'}</td><td>${dir}</td><td style="color:var(--muted);font-size:11px;">${s.sweep_type||'—'}</td><td>${s.sl||'—'}</td><td>${s.tp||'—'}</td><td style="color:var(--muted);">${s.zones_count||'0'}</td></tr>`;
+        });
+      }
+      if (data.trades && data.trades.length > 0) {
+        document.getElementById('tradeCount').textContent = data.trades.length+' total';
+        const tbody = document.getElementById('tradesBody');
+        tbody.innerHTML = '';
+        data.trades.slice(-20).reverse().forEach(t => {
+          const dir = t.direction==='BULLISH' ? '<span class="pill pill-long">Long</span>' : '<span class="pill pill-short">Short</span>';
+          let result = '<span class="pill pill-open">Open</span>';
+          if (t.status==='WIN') result='<span class="pill pill-win">Win</span>';
+          if (t.status==='LOSS') result='<span class="pill pill-loss">Loss</span>';
+          tbody.innerHTML += `<tr><td>${t.timestamp?t.timestamp.slice(11,16):'—'}</td><td>${t.symbol||'—'}</td><td>${dir}</td><td>${t.entry_price||'—'}</td><td>${t.sl||'—'}</td><td>${t.tp||'—'}</td><td>${t.lot_size||'—'}</td><td>${result}</td></tr>`;
+        });
+      }
+      if (data.pair_counts) {
+        const pc = data.pair_counts;
+        const max = Math.max(...Object.values(pc), 1);
+        const map = {'EURUSD.sim':'eu','GBPUSD.sim':'gu','AUDUSD.sim':'au','XAUUSD.sim':'xau'};
+        Object.entries(map).forEach(([sym,id]) => {
+          const count = pc[sym]||0;
+          document.getElementById(id+'-count').textContent = count;
+          document.getElementById(id+'-bar').style.width = ((count/max)*100)+'%';
+        });
+      }
+    } catch(e) {}
+  }
+  loadData(); setInterval(loadData, 30000);
+</script>
+</body>
+</html>
