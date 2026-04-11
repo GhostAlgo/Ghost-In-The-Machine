@@ -14,6 +14,7 @@ from entry_signal import scan_all
 from trade_executor import place_trade
 from telegram_bot import notify_signal, notify_trade, notify_no_signal, notify_error
 from logger import log_signal, log_trade, log_scan, print_stats
+from data_exporter import export_data
 
 # ─────────────────────────────────────────
 # LOGGING SETUP
@@ -35,33 +36,28 @@ def log(msg):
 
 # ─────────────────────────────────────────
 # MARKET HOURS GATE
-# Sunday 21:00 UTC open -- Friday 19:00 UTC close
 # ─────────────────────────────────────────
 def is_market_open():
+    now     = datetime.now(timezone.utc)
+    weekday = now.weekday()  # 0=Mon, 4=Fri, 5=Sat, 6=Sun
+    hour    = now.hour
+    minute  = now.minute
+    if weekday == 5: return False
+    if weekday == 6: return hour >= 21
+    if weekday == 4: return (hour < 19) or (hour == 19 and minute == 0)
+    return True
+
+def seconds_until_open():
     now     = datetime.now(timezone.utc)
     weekday = now.weekday()
     hour    = now.hour
     minute  = now.minute
-
+    second  = now.second
     if weekday == 5:
-        return False
-    if weekday == 6:
-        return hour >= 21
-    if weekday == 4:
-        return (hour < 19) or (hour == 19 and minute == 0)
-    return True
-
-def get_sleep_until_open():
-    now     = datetime.now(timezone.utc)
-    weekday = now.weekday()
-
-    if weekday == 5:
-        seconds_to_sunday_21 = (6 - now.weekday()) * 86400
-        open_hour_seconds    = 21 * 3600
-        current_seconds      = now.hour * 3600 + now.minute * 60 + now.second
-        return seconds_to_sunday_21 - current_seconds + open_hour_seconds
-    if weekday == 6 and now.hour < 21:
-        return (21 - now.hour) * 3600 - now.minute * 60 - now.second
+        days_to_sunday = 1
+        return days_to_sunday * 86400 + (21 * 3600) - (hour * 3600 + minute * 60 + second)
+    if weekday == 6 and hour < 21:
+        return (21 - hour) * 3600 - minute * 60 - second
     return 0
 
 # ─────────────────────────────────────────
@@ -85,7 +81,6 @@ def run_scan():
         if signals:
             for signal in signals:
                 log(f"  SIGNAL: {signal['symbol']} {signal['direction'].upper()}")
-
                 log_signal(signal)
                 log_scan(signal["symbol"], signal_fired=True)
                 notify_signal(signal)
@@ -119,6 +114,7 @@ def run_scan():
 
     finally:
         disconnect()
+        export_data()
 
 # ─────────────────────────────────────────
 # MAIN LOOP
@@ -142,22 +138,20 @@ if __name__ == "__main__":
                 log(f"\n  Next scan in 5 minutes...\n")
                 time.sleep(300)
             else:
-                now = datetime.now(timezone.utc)
-                if now.weekday() == 4 and now.hour >= 19:
-                    log(f"  Market closed -- Friday close reached. Sleeping until Sunday 21:00 UTC.")
-                elif now.weekday() == 5:
-                    log(f"  Market closed -- Saturday. Sleeping until Sunday 21:00 UTC.")
-                elif now.weekday() == 6 and now.hour < 21:
-                    log(f"  Market closed -- Sunday, waiting for 21:00 UTC open.")
-                else:
-                    log(f"  Market closed -- sleeping.")
+                wait = seconds_until_open()
+                now  = datetime.now(timezone.utc)
 
-                wait = get_sleep_until_open()
-                if wait > 0:
-                    log(f"  Resuming in {round(wait / 3600, 1)} hours.\n")
-                    time.sleep(min(wait, 3600))
-                else:
-                    time.sleep(60)
+                if now.weekday() == 5:
+                    log(f"  Market closed -- Saturday. Sleeping {round(wait/3600,1)}h until Sunday 21:00 UTC.")
+                elif now.weekday() == 6 and now.hour < 21:
+                    log(f"  Market closed -- Sunday. Sleeping {round(wait/3600,1)}h until 21:00 UTC open.")
+                elif now.weekday() == 4 and now.hour >= 19:
+                    log(f"  Market closed -- Friday close. Sleeping until Sunday 21:00 UTC.")
+
+                # Sleep the full wait time -- wake up 60s before open to be ready
+                sleep_time = max(wait - 60, 60) if wait > 120 else 60
+                log(f"  Bot sleeping. Next check in {round(sleep_time/3600,1)}h\n")
+                time.sleep(sleep_time)
 
         except KeyboardInterrupt:
             log("\n  GHOST IN THE MACHINE -- OFFLINE")
