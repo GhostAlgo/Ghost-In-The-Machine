@@ -1,0 +1,32 @@
+{
+  "last_updated": "2026-04-13 12:25:04 UTC",
+  "stats": {
+    "total_scans": 516,
+    "total_signals": 0,
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "winrate": 0,
+    "account_start": 100000
+  },
+  "symbol_stats": {
+    "EURUSD": {
+      "trades": 0,
+      "wins": 0
+    },
+    "GBPUSD": {
+      "trades": 0,
+      "wins": 0
+    },
+    "AUDUSD": {
+      "trades": 0,
+      "wins": 0
+    },
+    "XAUUSD": {
+      "trades": 0,
+      "wins": 0
+    }
+  },
+  "recent_signals": [],
+  "recent_trades": []
+}
