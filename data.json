@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-04-14 07:07:20 UTC",
+  "last_updated": "2026-04-14 07:12:42 UTC",
   "stats": {
-    "total_scans": 1288,
-    "total_signals": 4,
+    "total_scans": 1289,
+    "total_signals": 5,
     "total_trades": 0,
     "wins": 0,
     "losses": 0,
@@ -28,6 +28,20 @@
     }
   },
   "recent_signals": [
+    {
+      "id": 5,
+      "timestamp": "2026-04-14 07:12:41 UTC",
+      "symbol": "XAUUSD",
+      "direction": "BEARISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 4730.7425,
+      "tp": 4700.565,
+      "zones_count": null
+    },
     {
       "id": 4,
       "timestamp": "2026-04-14 07:07:19 UTC",
