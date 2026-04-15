@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-04-15 03:06:50 UTC",
+  "last_updated": "2026-04-15 03:12:15 UTC",
   "stats": {
-    "total_scans": 2183,
-    "total_signals": 7,
+    "total_scans": 2184,
+    "total_signals": 8,
     "total_trades": 0,
     "wins": 0,
     "losses": 0,
@@ -28,6 +28,20 @@
     }
   },
   "recent_signals": [
+    {
+      "id": 8,
+      "timestamp": "2026-04-15 03:12:14 UTC",
+      "symbol": "EURUSD",
+      "direction": "BULLISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 1.18036,
+      "tp": 1.18112,
+      "zones_count": null
+    },
     {
       "id": 7,
       "timestamp": "2026-04-15 03:06:49 UTC",
