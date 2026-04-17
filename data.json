@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-04-17 08:00:18 UTC",
+  "last_updated": "2026-04-17 08:05:43 UTC",
   "stats": {
-    "total_scans": 4429,
-    "total_signals": 45,
+    "total_scans": 4430,
+    "total_signals": 46,
     "total_trades": 0,
     "wins": 0,
     "losses": 0,
@@ -28,6 +28,20 @@
     }
   },
   "recent_signals": [
+    {
+      "id": 46,
+      "timestamp": "2026-04-17 08:05:41 UTC",
+      "symbol": "AUDUSD",
+      "direction": "BEARISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 0.71433,
+      "tp": 0.7134,
+      "zones_count": null
+    },
     {
       "id": 45,
       "timestamp": "2026-04-17 05:20:47 UTC",
