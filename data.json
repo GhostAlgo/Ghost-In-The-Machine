@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-04-19 21:43:25 UTC",
+  "last_updated": "2026-04-19 21:48:53 UTC",
   "stats": {
-    "total_scans": 4895,
-    "total_signals": 67,
+    "total_scans": 4897,
+    "total_signals": 69,
     "total_trades": 0,
     "wins": 0,
     "losses": 0,
@@ -28,6 +28,34 @@
     }
   },
   "recent_signals": [
+    {
+      "id": 69,
+      "timestamp": "2026-04-19 21:48:51 UTC",
+      "symbol": "XAUUSD",
+      "direction": "BULLISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 4867.8667,
+      "tp": 4891.54,
+      "zones_count": null
+    },
+    {
+      "id": 68,
+      "timestamp": "2026-04-19 21:48:50 UTC",
+      "symbol": "GBPUSD",
+      "direction": "BULLISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 1.35798,
+      "tp": 1.35996,
+      "zones_count": null
+    },
     {
       "id": 67,
       "timestamp": "2026-04-19 21:43:24 UTC",
@@ -698,34 +726,6 @@
       "entry_zone_high": null,
       "sl": 4774.85815,
       "tp": 4762.36,
-      "zones_count": null
-    },
-    {
-      "id": 19,
-      "timestamp": "2026-04-15 15:34:41 UTC",
-      "symbol": "EURUSD",
-      "direction": "BEARISH",
-      "sweep_type": null,
-      "sweep_level": null,
-      "mss_level": null,
-      "entry_zone_low": null,
-      "entry_zone_high": null,
-      "sl": 1.17772,
-      "tp": 1.1772,
-      "zones_count": null
-    },
-    {
-      "id": 18,
-      "timestamp": "2026-04-15 15:29:19 UTC",
-      "symbol": "EURUSD",
-      "direction": "BEARISH",
-      "sweep_type": null,
-      "sweep_level": null,
-      "mss_level": null,
-      "entry_zone_low": null,
-      "entry_zone_high": null,
-      "sl": 1.17772,
-      "tp": 1.1772,
       "zones_count": null
     }
   ],
