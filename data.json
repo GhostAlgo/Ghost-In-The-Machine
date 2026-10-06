@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-06 00:04:39 UTC",
+  "last_updated": "2026-10-06 00:10:03 UTC",
   "stats": {
-    "total_scans": 125269,
-    "total_signals": 941,
+    "total_scans": 125270,
+    "total_signals": 942,
     "total_trades": 0,
     "wins": 0,
     "losses": 0,
@@ -28,6 +28,20 @@
     }
   },
   "recent_signals": [
+    {
+      "id": 942,
+      "timestamp": "2026-10-06 00:10:01 UTC",
+      "symbol": "GBPUSD",
+      "direction": "BULLISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 1.32292,
+      "tp": 1.32562,
+      "zones_count": null
+    },
     {
       "id": 941,
       "timestamp": "2026-10-05 13:16:58 UTC",
@@ -712,20 +726,6 @@
       "entry_zone_high": null,
       "sl": 4350.305,
       "tp": 4322.81,
-      "zones_count": null
-    },
-    {
-      "id": 892,
-      "timestamp": "2026-09-21 20:04:30 UTC",
-      "symbol": "AUDUSD",
-      "direction": "BULLISH",
-      "sweep_type": null,
-      "sweep_level": null,
-      "mss_level": null,
-      "entry_zone_low": null,
-      "entry_zone_high": null,
-      "sl": 0.71312,
-      "tp": 0.71404,
       "zones_count": null
     }
   ],
