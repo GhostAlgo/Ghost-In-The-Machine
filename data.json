@@ -1,8 +1,8 @@
 {
-  "last_updated": "2026-10-13 03:58:22 UTC",
+  "last_updated": "2026-10-13 04:03:49 UTC",
   "stats": {
-    "total_scans": 130234,
-    "total_signals": 989,
+    "total_scans": 130235,
+    "total_signals": 990,
     "total_trades": 0,
     "wins": 0,
     "losses": 0,
@@ -28,6 +28,20 @@
     }
   },
   "recent_signals": [
+    {
+      "id": 990,
+      "timestamp": "2026-10-13 04:03:48 UTC",
+      "symbol": "XAUUSD",
+      "direction": "BEARISH",
+      "sweep_type": null,
+      "sweep_level": null,
+      "mss_level": null,
+      "entry_zone_low": null,
+      "entry_zone_high": null,
+      "sl": 4170.1425,
+      "tp": 4150.785,
+      "zones_count": null
+    },
     {
       "id": 989,
       "timestamp": "2026-10-13 03:31:03 UTC",
@@ -712,20 +726,6 @@
       "entry_zone_high": null,
       "sl": 1.32292,
       "tp": 1.32562,
-      "zones_count": null
-    },
-    {
-      "id": 940,
-      "timestamp": "2026-10-05 03:04:54 UTC",
-      "symbol": "AUDUSD",
-      "direction": "BULLISH",
-      "sweep_type": null,
-      "sweep_level": null,
-      "mss_level": null,
-      "entry_zone_low": null,
-      "entry_zone_high": null,
-      "sl": 0.69546,
-      "tp": 0.69756,
       "zones_count": null
     }
   ],
